@@ -19,17 +19,21 @@ public class MainClassBank {
 		
 	}
 	
+
+	
 	public static void main(String[] args) throws ParseException {
 		Scanner s = new Scanner(System.in);
 		int optionn = 0;
-		while (optionn != 5) {
+		while (optionn != 7) {
 
 			System.out.println("Enter the number of the operation to do:");
 			System.out.println("1- Add person");
 			System.out.println("2- Create an account to a person");
 			System.out.println("3- Create operations in account");
 			System.out.println("4- Consult Accouns Status");
-			System.out.println("5- Exit");
+			System.out.println("5- See clients with more debts");
+			System.out.println("6- See clients with more Money");
+			System.out.println("7- Exit");
 			int option = s.nextInt();
 			optionn = option;
 			try {
@@ -119,8 +123,17 @@ public class MainClassBank {
 					printStatus(status);
 					
 					break;
-
 				case 5:
+					List<Person> pPrint = myBank.clientsMostDebt();
+					System.out.println("Clients with more debts");
+					for (int i = 0; i < pPrint.size(); i++) {
+						System.out.println(pPrint.get(i).getFirstName());
+					}
+					break;
+				case 6:
+					break;
+
+				case 7:
 					System.out.close();
 					break;
 

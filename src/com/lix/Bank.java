@@ -107,4 +107,46 @@ public class Bank {
 				return myAccStatusList;
 	}
 
+	public List<Person> clientsMostDebt() throws Exception{
+		List<Person> aux = new ArrayList<>();
+		for (int i = 0; i < personList.size(); i++) {
+			for (int j = 0; j < personList.get(i).getAccounts().size(); j++) {
+				if(personList.get(i).getAccounts().get(j).getAccType() == accontType.CREDIT)
+					aux.add(personList.get(i));
+			}
+		}
+		double biggest = 0;
+		List<Person> aux2 = new ArrayList<>();
+		//Person p = new Person();
+		int k = 2;
+		while(k != 0){
+		for (int i = 0; i < aux.size(); i++) {
+			for (int j = 0; j < aux.get(i).getAccounts().size(); j++) {
+				
+				if((aux.get(i).getAccounts().get(j).getAccType() == accontType.CREDIT) && ((((Credit)(aux.get(i).getAccounts().get(j))).getLimit() - aux.get(i).getAccounts().get(j).getAccoutAmount()) >= biggest) && (k!=1)){
+					biggest = ((Credit)(aux.get(i).getAccounts().get(j))).getLimit() - aux.get(i).getAccounts().get(j).getAccoutAmount();
+					//p = aux.get(i);
+					break;
+				}
+				else
+					if((aux.get(i).getAccounts().get(j).getAccType() == accontType.CREDIT) && ((((Credit)(aux.get(i).getAccounts().get(j))).getLimit() - aux.get(i).getAccounts().get(j).getAccoutAmount()) == biggest) && (k==1)){
+						aux2.add(aux.get(i));
+					}
+				
+			}
+		}
+		//if(k==2){
+		//aux2.add(p);
+		//}
+		
+		k--;
+		
+	}
+		if(aux2.size() == 0)
+			throw new Exception("Any registered client has Credit account or they does not have any debt");
+		return aux2;
+		
+		
+	}
+	
 }

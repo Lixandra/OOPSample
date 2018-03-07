@@ -64,5 +64,8 @@ public class Person {
 		this.lastName = lastName;
 		this.dateBirth = dateBirth;
 	}
+	public Person(){
+		
+	}
 
 }
