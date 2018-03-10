@@ -33,4 +33,5 @@ public class Status {
 		this.amount = amount;
 	}
 	
+	
 }

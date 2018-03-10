@@ -28,15 +28,19 @@ public class Credit extends Account {
 
 	@Override
 	public double resultInterest() {
-		double interestCredit = (accoutAmount * interest) / 100;
+		double interestCredit = ((limit - accoutAmount) * interest) / 100;
 		return interestCredit;
 	}
 
 	@Override
-	public void addOperations(double amount, Transactions transaction, String transDescription) throws Exception{
+	public void addOperations(double amount, Transactions transaction, String transDescription, Date transacDate) throws Exception{
 		
-			if(transaction == Transactions.DEPOSIT)//accoutAmount in CC is how  much have been wasted
+			if(transaction == Transactions.DEPOSIT){//accoutAmount in CC is how  much have been wasted
+				if(((limit - accoutAmount) == limit) || ((limit - accoutAmount) < amount))
+					throw new Exception("Pay amount is too high or unnecessary");
+				else
 				accoutAmount += amount;
+			}
 			else{
 				if((transaction == Transactions.WITHDRAWALS) &&  (((accoutAmount == 0) && (accoutAmount + amount > limit)) || ((accoutAmount!=0 )&& (accoutAmount < amount)))){// when pay with CC
 					throw new Exception("The transaction amount overpass the account limit");
@@ -49,8 +53,8 @@ public class Credit extends Account {
 					
 			}
 			
-			Date date = new Date();
-			Operations op = new Operations(date, amount, transaction, transDescription);
+			//Date date = new Date();
+			Operations op = new Operations(transacDate, amount, transaction, transDescription);
 			operations.add(op);
 			
 	}

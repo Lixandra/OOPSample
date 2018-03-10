@@ -1,6 +1,6 @@
 package com.lix;
 
-import java.text.ParseException;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -21,9 +21,13 @@ public class MainClassBank {
 	
 
 	
-	public static void main(String[] args) throws ParseException {
+	public static void main(String[] args){
 		Scanner s = new Scanner(System.in);
 		int optionn = 0;
+		
+		String pattern = "yyyy-MM-dd";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		
 		while (optionn != 7) {
 
 			System.out.println("Enter the number of the operation to do:");
@@ -48,8 +52,8 @@ public class MainClassBank {
 					String lastName = s.nextLine();
 					System.out.println("Enter Date of Birth yyyy-MM-dd");
 					String date = s.nextLine();
-					String pattern = "yyyy-MM-dd";
-					SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+					//String pattern = "yyyy-MM-dd";
+					//SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 					Date dateBirth = simpleDateFormat.parse(date);
 					Person p = new Person(id, name, lastName, dateBirth);
 					myBank.addPerson(p);
@@ -113,7 +117,13 @@ public class MainClassBank {
 					System.out.println("Enter transaction description");
 					s.nextLine();
 					String descrip = s.nextLine();
-					myBank.addOperationToAccount(myIdPerson, accT, amount, transactionACC, descrip);
+					
+					System.out.println("Enter Transaction Date in format yyyy-MM-dd");
+					String transDate = s.nextLine();
+					//String tPattern = "yyyy-MM-dd";
+					//SimpleDateFormat simpleDateFormatt = new SimpleDateFormat(pattern);
+					Date myTransactionDate = simpleDateFormat.parse(transDate);
+					myBank.addOperationToAccount(myIdPerson, accT, amount, transactionACC, descrip, myTransactionDate);
 					break;
 					
 				case 4:
@@ -131,6 +141,11 @@ public class MainClassBank {
 					}
 					break;
 				case 6:
+					List<Person> clientMostMon =myBank.clientMostMoney();
+					System.out.println("Client with more Money:");
+					for (int i = 0; i < clientMostMon.size(); i++) {
+						System.out.println(clientMostMon.get(i).getFirstName());
+					}
 					break;
 
 				case 7:

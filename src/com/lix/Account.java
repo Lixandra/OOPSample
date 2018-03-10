@@ -62,7 +62,7 @@ public abstract class Account {
 
 	public abstract double resultInterest();
 
-	public void addOperations(double amount, Transactions transaction, String transDescription) throws Exception {
+	public void addOperations(double amount, Transactions transaction, String transDescription, Date transacDate) throws Exception {
 		
 			if (transaction == Transactions.DEPOSIT)
 				accoutAmount += amount;
@@ -75,9 +75,9 @@ public abstract class Account {
 				}
 			}
 			// DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-			Date date = new Date();
+			//Date date = new Date();
 
-			Operations op = new Operations(date, amount, transaction, transDescription);
+			Operations op = new Operations(transacDate, amount, transaction, transDescription);
 			operations.add(op);
 		
 	}

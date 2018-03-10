@@ -1,6 +1,8 @@
 package com.lix;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import com.lix.Account.accontType;
@@ -60,7 +62,7 @@ public class Bank {
 	}
 
 	public void addOperationToAccount(int idPerson, accontType myAccType, double myamount, Transactions myTransaction,
-			String myTransDescription) throws Exception {
+			String myTransDescription, Date transacDate) throws Exception {
 		
 		boolean flag = false;
 		boolean noAcc = false;
@@ -70,9 +72,30 @@ public class Bank {
 				List<Account> mAcc = personList.get(i).getAccounts();
 				for (int j = 0; j < mAcc.size(); j++) {
 					if (mAcc.get(j).getAccType().equals(myAccType)) {
+						//applying interest
+						Calendar myCalendar = Calendar.getInstance();
+						myCalendar.setTime(transacDate);
+						int calendarMonth = myCalendar.get(Calendar.MONTH);
+						
+						int pos = mAcc.get(j).getOperations().size() - 1;
+						if(pos!= -1){
+						Date datePreviousTransac = mAcc.get(j).getOperations().get(pos).getTransactionDate();
+						myCalendar.setTime(datePreviousTransac);
+						int monthPreviousTrans = myCalendar.get(Calendar.MONTH);
+						
+						if(calendarMonth != monthPreviousTrans){
+							double plusIntetest;
+							if(mAcc.get(j).getAccType() == accontType.CREDIT)
+								 plusIntetest = mAcc.get(j).getAccoutAmount() -  mAcc.get(j).resultInterest();
+							else{
+							    plusIntetest = mAcc.get(j).getAccoutAmount() + mAcc.get(j).resultInterest();
+							}
+							mAcc.get(j).setAccoutAmount(plusIntetest);
+						}
+						}
 						noAcc = true;
 						personList.get(i).getAccounts().get(j).addOperations(myamount, myTransaction,
-								myTransDescription);
+								myTransDescription, transacDate);
 						System.out.println("Operation added");
 						break;
 					}
@@ -149,4 +172,38 @@ public class Bank {
 		
 	}
 	
+	public List<Person> clientMostMoney(){
+		double sum = 0;
+		//double sumAux = 0;
+		List<Person> mypersonList = new ArrayList<>();
+		List<Person> personListResult = new ArrayList<>();
+		List<Double> sumList = new ArrayList<>();
+		for (int i = 0; i < personList.size(); i++) {
+			sum = 0;
+			for (int j = 0; j < personList.get(i).getAccounts().size(); j++) {
+				if((personList.get(i).getAccounts().get(j).getAccType() == accontType.CHECKING) ||(personList.get(i).getAccounts().get(j).getAccType() == accontType.SAVING)){
+					sum += personList.get(i).getAccounts().get(j).getAccoutAmount();
+				}
+			}
+			if(sum != 0){
+				mypersonList.add(personList.get(i));
+				sumList.add(sum);
+			}
+				
+		}
+		//int pos = -1;
+		double biggest = 0;
+		for (int i = 0; i < sumList.size(); i++) {
+			if(sumList.get(i) >= biggest){
+				biggest = sumList.get(i);
+				//pos = i;
+			}
+		}
+		
+		for (int i = 0; i < mypersonList.size(); i++) {
+			if(sumList.get(i) == biggest)
+				personListResult.add(mypersonList.get(i));
+		}
+		return personListResult;
+	}
 }
