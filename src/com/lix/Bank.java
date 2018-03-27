@@ -5,65 +5,63 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.lix.Account.accontType;
+import com.lix.accounts.Account;
+import com.lix.accounts.Checking;
+import com.lix.accounts.Credit;
+import com.lix.accounts.Saving;
+import com.lix.enums.Transactions;
 
 public class Bank {
 	List<Person> personList = new ArrayList<>();
 
-	public void addPerson(Person pEntry) {
-		boolean flag = false;
+	public void addPerson(Person pEntry) throws Exception {
+		//boolean flag = false;
 		for (int i = 0; i < personList.size(); i++) {
 			if (personList.get(i).getId() == pEntry.getId()) {
-				System.out.println("Already exist a person in the system with same id");
-				flag = true;
-				break;
+				//flag = true;
+				throw new Exception("Already exist a person in the system with same id");
 			}
 		}
-		if (!flag)
+		//if (!flag)
 			personList.add(pEntry);
 	}
 
-	public void createAccount(int idPerson, Account a) {
+	public void createAccount(int idPerson, int accTypeSelectedparam, int ccLimit) throws Exception {
 		boolean flag = false;
-		boolean flag2 = false;
+		//boolean flag2 = false;
 		for (int i = 0; i < personList.size(); i++) {
 			if (personList.get(i).getId() == idPerson) {
 				flag = true;
 				List<Account> listAccountPerson = personList.get(i).getAccounts();
 				for (int j = 0; j < listAccountPerson.size(); j++) {
-					if (listAccountPerson.get(j).getAccType().equals(a.getAccType())) {// CHECK
-						System.out.println("Already exist this kind of account for this person");
-						flag2 = true;
-						break;
+					if (  ((listAccountPerson.get(j) instanceof Saving) && (accTypeSelectedparam == 1)) || ((listAccountPerson.get(j) instanceof Checking) && (accTypeSelectedparam == 2)) || ((listAccountPerson.get(j) instanceof Credit) && (accTypeSelectedparam == 3)) ) {// CHECK
+						throw new Exception("Already exist this kind of account for this person");
+						//flag2 = true;
+						//break;
 					}
 				}
-				if ((!flag2) || (listAccountPerson.size() == 0)) {
+				//if ((!flag2) || (listAccountPerson.size() == 0)) {
 					Account newAccount;
-					if (a.accType == accontType.SAVING) {
-						newAccount = new Saving(a.getInterest(), a.getAccoutAmount(), a.getAccType());
-						// personList.get(i).getAccounts().add(newAccount);
-					} else if (a.accType == accontType.CHECKING) {
-						newAccount = new Checking(a.getInterest(), a.getAccoutAmount(), a.getAccType());
+					if (accTypeSelectedparam == 1) {
+						newAccount = new Saving();
+						
+					} else if (accTypeSelectedparam == 2) {
+						newAccount = new Checking();
 					} else {
-						int limitCC = ((Credit) a).getLimit();
-						//a.setAccoutAmount(limitCC);
-						newAccount = new Credit(a.getInterest(), a.getAccoutAmount(), a.getAccType(), limitCC);
-
+						newAccount = new Credit(ccLimit);
 					}
 					personList.get(i).getAccounts().add(newAccount);
 					System.out.println("New account was added to Person with id " + idPerson);
-				}
+				//}
 				break;
 
 			}
 		}
 		if (!flag)
-			System.out.println("Invalid id person");
+			throw new Exception("Invalid id person");
 	}
 
-	public void addOperationToAccount(int idPerson, accontType myAccType, double myamount, Transactions myTransaction,
-			String myTransDescription, Date transacDate) throws Exception {
-		
+	public void addOperationToAccount(int idPerson, int selection, Transactions kindTransaction, double myamount, String descrip, Date transacDate) throws Exception {
 		boolean flag = false;
 		boolean noAcc = false;
 		for (int i = 0; i < personList.size(); i++) {
@@ -71,7 +69,7 @@ public class Bank {
 				flag = true;
 				List<Account> mAcc = personList.get(i).getAccounts();
 				for (int j = 0; j < mAcc.size(); j++) {
-					if (mAcc.get(j).getAccType().equals(myAccType)) {
+					if ( ((mAcc.get(j) instanceof Saving) && (selection == 1)) || ((mAcc.get(j) instanceof Checking) && (selection == 2)) || ((mAcc.get(j) instanceof Credit) && (selection == 3)) ) {
 						//applying interest
 						Calendar myCalendar = Calendar.getInstance();
 						myCalendar.setTime(transacDate);
@@ -85,8 +83,8 @@ public class Bank {
 						
 						if(calendarMonth != monthPreviousTrans){
 							double plusIntetest;
-							if(mAcc.get(j).getAccType() == accontType.CREDIT)
-								 plusIntetest = mAcc.get(j).getAccoutAmount() -  mAcc.get(j).resultInterest();
+							if(mAcc.get(j) instanceof Credit)
+								plusIntetest = mAcc.get(j).getAccoutAmount() -  mAcc.get(j).resultInterest();
 							else{
 							    plusIntetest = mAcc.get(j).getAccoutAmount() + mAcc.get(j).resultInterest();
 							}
@@ -94,8 +92,8 @@ public class Bank {
 						}
 						}
 						noAcc = true;
-						personList.get(i).getAccounts().get(j).addOperations(myamount, myTransaction,
-								myTransDescription, transacDate);
+						personList.get(i).getAccounts().get(j).addOperations(myamount, kindTransaction,
+								descrip, transacDate);
 						System.out.println("Operation added");
 						break;
 					}
@@ -119,7 +117,7 @@ public class Bank {
 			int accSize = personList.get(i).getAccounts().size();
 			if((personList.get(i).getId() == idPerson) && (accSize != 0)){
 				for (int j = 0; j < accSize; j++) {
-					Status s = new Status(personList.get(i).getAccounts().get(j).getAccType(), personList.get(i).getAccounts().get(j).getAccoutAmount());
+					Status s = new Status(personList.get(i).getAccounts().get(j), personList.get(i).getAccounts().get(j).getAccoutAmount());
 					myAccStatusList.add(s);
 				}
 			}
@@ -134,33 +132,35 @@ public class Bank {
 		List<Person> aux = new ArrayList<>();
 		for (int i = 0; i < personList.size(); i++) {
 			for (int j = 0; j < personList.get(i).getAccounts().size(); j++) {
-				if(personList.get(i).getAccounts().get(j).getAccType() == accontType.CREDIT)
+				if(personList.get(i).getAccounts().get(j) instanceof Credit){
 					aux.add(personList.get(i));
+					break;
+				}
 			}
 		}
 		double biggest = 0;
 		List<Person> aux2 = new ArrayList<>();
-		//Person p = new Person();
-		int k = 2;
+		
+		int k = 2;//this is to check the list of person the 2nd time to find people with amount == to biggest
 		while(k != 0){
 		for (int i = 0; i < aux.size(); i++) {
 			for (int j = 0; j < aux.get(i).getAccounts().size(); j++) {
 				
-				if((aux.get(i).getAccounts().get(j).getAccType() == accontType.CREDIT) && ((((Credit)(aux.get(i).getAccounts().get(j))).getLimit() - aux.get(i).getAccounts().get(j).getAccoutAmount()) >= biggest) && (k!=1)){
+				if((aux.get(i).getAccounts().get(j) instanceof Credit) 
+						&& ((((Credit)(aux.get(i).getAccounts().get(j))).getLimit() - aux.get(i).getAccounts().get(j).getAccoutAmount()) >= biggest) 
+						&& (k!=1) && (aux.get(i).getAccounts().get(j).getAccoutAmount() != 0)){
 					biggest = ((Credit)(aux.get(i).getAccounts().get(j))).getLimit() - aux.get(i).getAccounts().get(j).getAccoutAmount();
 					//p = aux.get(i);
 					break;
 				}
 				else
-					if((aux.get(i).getAccounts().get(j).getAccType() == accontType.CREDIT) && ((((Credit)(aux.get(i).getAccounts().get(j))).getLimit() - aux.get(i).getAccounts().get(j).getAccoutAmount()) == biggest) && (k==1)){
+					if((aux.get(i).getAccounts().get(j) instanceof Credit) && ((((Credit)(aux.get(i).getAccounts().get(j))).getLimit() - aux.get(i).getAccounts().get(j).getAccoutAmount()) == biggest) 
+							&& (k==1) && (aux.get(i).getAccounts().get(j).getAccoutAmount() != 0)){
 						aux2.add(aux.get(i));
 					}
 				
 			}
 		}
-		//if(k==2){
-		//aux2.add(p);
-		//}
 		
 		k--;
 		
@@ -172,16 +172,50 @@ public class Bank {
 		
 	}
 	
+	/*public List<Person> clientsMostDebt() throws Exception{
+		List<Person> aux = new ArrayList<>();
+		for (int i = 0; i < personList.size(); i++) {
+			for (int j = 0; j < personList.get(i).getAccounts().size(); j++) {
+				if(personList.get(i).getAccounts().get(j) instanceof Credit){
+					aux.add(personList.get(i));
+					break;
+				}
+			}
+		}
+		double biggest = 0;
+		Person p = new Person();
+		if(aux.size()!=0){	
+		for (int i = 0; i < aux.size(); i++) {
+			for (int j = 0; j < aux.get(i).getAccounts().size(); j++) {
+				if((aux.get(i).getAccounts().get(j) instanceof Credit) 
+						&& ((((Credit)(aux.get(i).getAccounts().get(j))).getLimit() - aux.get(i).getAccounts().get(j).getAccoutAmount()) >= biggest) 
+						&& (aux.get(i).getAccounts().get(j).getAccoutAmount() != 0)){
+					biggest = ((Credit)(aux.get(i).getAccounts().get(j))).getLimit() - aux.get(i).getAccounts().get(j).getAccoutAmount();
+					p = aux.get(i);
+					break;
+				}	
+			}
+		}
+		List<Person> result = new ArrayList<>();
+		if(biggest != 0)
+			result.add(p);
+		else
+			throw new Exception("CLients with CC may not have perform any transaction");
+		}
+		else
+			throw new Exception("Any registered client has Credit account or they does not have any debt");
+			return
+	}*/
+	
 	public List<Person> clientMostMoney(){
 		double sum = 0;
-		//double sumAux = 0;
 		List<Person> mypersonList = new ArrayList<>();
 		List<Person> personListResult = new ArrayList<>();
 		List<Double> sumList = new ArrayList<>();
 		for (int i = 0; i < personList.size(); i++) {
 			sum = 0;
 			for (int j = 0; j < personList.get(i).getAccounts().size(); j++) {
-				if((personList.get(i).getAccounts().get(j).getAccType() == accontType.CHECKING) ||(personList.get(i).getAccounts().get(j).getAccType() == accontType.SAVING)){
+				if((personList.get(i).getAccounts().get(j) instanceof Checking) ||(personList.get(i).getAccounts().get(j) instanceof Saving)){
 					sum += personList.get(i).getAccounts().get(j).getAccoutAmount();
 				}
 			}
@@ -191,12 +225,10 @@ public class Bank {
 			}
 				
 		}
-		//int pos = -1;
 		double biggest = 0;
 		for (int i = 0; i < sumList.size(); i++) {
 			if(sumList.get(i) >= biggest){
 				biggest = sumList.get(i);
-				//pos = i;
 			}
 		}
 		

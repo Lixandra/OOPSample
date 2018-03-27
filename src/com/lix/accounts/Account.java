@@ -1,28 +1,29 @@
-package com.lix;
+package com.lix.accounts;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.lix.Operations;
+import com.lix.enums.Transactions;
+
 public abstract class Account {
 
-	public enum accontType {
+	/*public enum accontType {
 		CHECKING, SAVING, CREDIT
-	}
+	}*/
 
 	protected List<Operations> operations = new ArrayList<>();
 	protected double interest;
 	protected double accoutAmount;
-	protected accontType accType;
-
-	public accontType getAccType() {
-		return accType;
+	
+	
+	public Account(double interest) {
+		this.interest = interest;
+		this.accoutAmount = 0;
 	}
 
-	public void setAccType(accontType accType) {
-		this.accType = accType;
-	}
-
+	
 	public List<Operations> getOperations() {
 		return operations;
 	}
@@ -38,20 +39,7 @@ public abstract class Account {
 	public void setInterest(double interest) {
 		this.interest = interest;
 	}
-
-	public Account(List<Operations> operations, double interest, double accoutAmount) {
-		this.operations = operations;
-		this.interest = interest;
-		this.accoutAmount = accoutAmount;
-	}
-
-	public Account(double interest, double accoutAmount, accontType accType) {
-
-		this.interest = interest;
-		this.accoutAmount = accoutAmount;
-		this.accType = accType;
-	}
-
+	
 	public double getAccoutAmount() {
 		return accoutAmount;
 	}

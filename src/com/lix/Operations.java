@@ -2,7 +2,9 @@ package com.lix;
 
 import java.util.Date;
 
-enum Transactions{DEPOSIT, WITHDRAWALS}
+import com.lix.enums.Transactions;
+
+//public enum Transactions{DEPOSIT, WITHDRAWALS}
 public class Operations {
 
 	private Date transactionDate;

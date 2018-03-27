@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.lix.accounts.Account;
+
 public class Person {
 	private List<Account> accounts = new ArrayList<>();
 	private int id;

@@ -1,11 +1,19 @@
-package com.lix;
+package com.lix.accounts;
 
 import java.util.Date;
-import java.util.List;
+import com.lix.Operations;
+import com.lix.enums.Transactions;
+
 
 public class Credit extends Account {
 	private int limit;
 
+
+	public Credit(int limit) {
+		super(20);
+		this.limit = limit;
+	}
+	
 	public int getLimit() {
 		return limit;
 	}
@@ -14,17 +22,8 @@ public class Credit extends Account {
 		this.limit = limit;
 	}
 
-	public Credit(List<Operations> operations, double interest, double accoutAmount, int limit) {
-		super(operations, interest, accoutAmount);
-		this.limit = limit;
-		interest = 20;
-	}
+	
 
-	public Credit(double interest, double accoutAmount, accontType accType, int limit) {
-		super(interest, accoutAmount, accType);
-		this.limit = limit;
-		interest = 20;
-	}
 
 	@Override
 	public double resultInterest() {

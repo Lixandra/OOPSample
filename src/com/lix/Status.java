@@ -1,22 +1,27 @@
 package com.lix;
 
-import com.lix.Account.accontType;
+import com.lix.accounts.Account;
 
 public class Status {
 
-	private accontType myAccountType;
+	//private accontType myAccountType;
+	private Account account;
 	private double amount;
 	
+	public Status (Account account,double amount){
+		this.account = account;
+		this.amount = amount;
+	}
 	
-	public accontType getMyAccountType() {
-		return myAccountType;
+	
+	public Account getAccount() {
+		return account;
 	}
 
 
-	public void setMyAccountType(accontType myAccountType) {
-		this.myAccountType = myAccountType;
+	public void setAccount(Account account) {
+		this.account = account;
 	}
-
 
 	public double getAmount() {
 		return amount;
@@ -28,10 +33,7 @@ public class Status {
 	}
 
 
-	public Status (accontType myAccountType,double amount){
-		this.myAccountType = myAccountType;
-		this.amount = amount;
-	}
+	
 	
 	
 }
